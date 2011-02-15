@@ -1,14 +1,0 @@
-Tcocos2d libraries
-v7
-r1
-cCheck dependencies
-
-N/Users/nk/Development/games/Base Jump/build/Debug/libcocos2d libraries.a
-c00000000000000000000000000000000
-t2
-s0
-
-CCheck dependencies
-r0
-lSLF07#2@18"Check dependencies318679901#318679901#0(63"[BEROR]error: There is no SDK with the name or path 'iphoneos'1(4@55"error: There is no SDK with the name or path 'iphoneos'318679901#18446744073709551615#0#0(1@0"0(0#1#0"32651513917735028#0"0#
-
