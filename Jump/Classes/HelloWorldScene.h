@@ -28,6 +28,9 @@ class FloorContactListener;
   LevelNode* level;
   GUINode* gui;
   
+  CCLabelTTF* healthButton;
+  CCLabelTTF* continueButton;
+  
   NSMutableArray *players;
   NSMutableArray *landedPlayers;
   FloorContactListener* contactListener;
@@ -39,6 +42,7 @@ class FloorContactListener;
   NSInteger count;
   int round;
   int league;
+  int cash;
 }
 
 // returns a Scene that contains the HelloWorld as the only child

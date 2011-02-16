@@ -12,8 +12,12 @@
 #include "Constants.h"
 
 #define PTM_RATIO 32
+static const int HEALTH_INC = 35;
+
 
 @implementation Player
+
+@synthesize health;
 
 enum {
   DEFAULT = 0,
@@ -87,14 +91,20 @@ enum {
     }
       
     case JUMPING: {
-      float chuteHeight = ((arc4random() % 50) + 1);
-      if (sprite.position.y < (150 + chuteHeight)) {
+      int maxHeight = 300;
+      int minHeight = 70 - (aiLeague * 10);
+      float chuteHeight = (arc4random() % (maxHeight - minHeight)) + minHeight;
+      if (sprite.position.y < chuteHeight) {
         state = LANDING;
         [self chute]; 
       }
       break;
     }
   }
+}
+
+- (void) setAILeague:(int)l {
+  aiLeague = l;
 }
 
 - (bool) landed { 
@@ -125,13 +135,13 @@ enum {
   return health == 0; 
 }
 
-- (int) health {
-  return health; 
-}
-
 - (void)dealloc {
     [super dealloc];
 }
 
+- (void) buyHealth {
+  health += 35;
+  health = health > 100 ? 100 : health;
+}
 
 @end

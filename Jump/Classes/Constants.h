@@ -15,7 +15,8 @@ enum {
   PRE_PLAY = 3,
   PLAY = 4,
   ROUND_OVER = 5,
-  GAME_OVER = 6
+  GAME_OVER = 6,
+  BUY_HEALTH = 7
 };
 
 enum {

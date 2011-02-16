@@ -16,11 +16,13 @@
   HealthNode* healthNode;
   CCLabelTTF *roundLabel;
   CCLabelTTF *leagueLabel;
+  CCLabelTTF *cashLabel;
   
 }
 
 - (void) setHealth:(int)h;
 - (void) setRound:(int)r;
 - (void) setLeague:(int)l;
+- (void) setCash:(int)c;
 
 @end

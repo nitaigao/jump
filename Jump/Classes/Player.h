@@ -20,8 +20,11 @@
   bool landed;
   bool chute;
   int state;
-  float health;
+  int health;
+  int aiLeague;
 }
+
+@property (assign) int health;
 
 - (id) initWithScene:(CCNode*)s world:(b2World*)w position:(CGPoint)p isPlayer:(bool)isPlayer;
 - (void) jump;
@@ -35,4 +38,6 @@
 - (int) health;
 - (bool) dead;
 - (void) newGame;
+- (void) buyHealth;
+- (void) setAILeague:(int)l;
 @end

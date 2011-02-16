@@ -25,6 +25,11 @@
 // HelloWorld implementation
 @implementation HelloWorld
 
+static const int CASH_REWARD = 5;
+static const int ROUNDS_PER_LEAGUE = 4;
+static const int HEALTH_COST = 50;
+static const int MAX_HEALTH = 100;
+
 +(id) scene
 {
 	// 'scene' is an autorelease object.
@@ -65,6 +70,14 @@
 
 - (void) setLeague:(int)l {
   [gui setLeague:l];
+  
+  for (Player* player in players) {
+    [player setAILeague:l];
+  }
+}
+
+- (void) setCash:(int)c {
+  [gui setCash:c];
 }
 
 - (void)start:(NSTimer*)timer {
@@ -101,6 +114,7 @@
 }
 
 - (void) endRound {
+  [self addChild:endLabel];
   int position = 1;
   for (Player* player in landedPlayers) {
     if (player == player1) {
@@ -113,6 +127,9 @@
     [endLabel setString:@"Game Over!"];
     [self setState:GAME_OVER];
   } else {
+    int cashMultiplier = [players count] - (position - 1);
+    cash += CASH_REWARD * cashMultiplier;
+    [self setCash:cash];
     [endLabel setString:[self positionText:position]];
     [self setState:ROUND_OVER]; 
   }  
@@ -120,6 +137,10 @@
 
 - (void) updateHealth {
   [gui setHealth:[player1 health]];
+}
+
+- (void) updateCash {
+  [gui setCash:cash];
 }
 
 - (void) playerLanded:(Player*)player { 
@@ -172,12 +193,17 @@
   [self setLeague:league];
   round = 1;
   [self setRound:round];
+  cash = 0;
   [self resetScene];
+}
+
+- (void) newLeague {
+  [self addChild:healthButton];
 }
 
 - (void) newRound {
   int new_round = ++round;
-  if (round == 5) {
+  if (round == ROUNDS_PER_LEAGUE + 1) {
     new_round = 1;
     round = 1;
     [self setLeague:++league];
@@ -294,19 +320,21 @@
     [startLabel setColor:ccc3(0, 0, 255)];
     startLabel.position = ccp( screenSize.width / 2, screenSize.height + (screenSize.height / 2));      
     
-    endLabel = [CCLabelTTF labelWithString:@"" fontName:@"Marker Felt" fontSize:32];
-    [level addChild:endLabel z:0];
+    endLabel = [[CCLabelTTF labelWithString:@"" fontName:@"Marker Felt" fontSize:32] retain];
     [endLabel setColor:ccc3(0, 0, 255)];
     endLabel.position = ccp(screenSize.width / 2, screenSize.height / 2);          
     
     gui = [[GUINode alloc] init];
     [self addChild:gui];
     
-//    healthLabel = [CCLabelTTF labelWithString:@"" fontName:@"Marker Felt" fontSize:32];
-//    [gui addChild:healthLabel z:0];
-//    [healthLabel setColor:ccc3(0, 0, 255)];
-//    healthLabel.position = ccp(screenSize.width / 2, 20);   
-        
+    healthButton = [[CCLabelTTF labelWithString:@"Buy Health" fontName:@"Marker Felt" fontSize:32] retain];
+    healthButton.position = ccp(screenSize.width / 2, screenSize.height / 1.9);
+    [healthButton setColor:ccc3(0, 0, 255)];
+    
+    continueButton = [[CCLabelTTF labelWithString:@"Continue" fontName:@"Marker Felt" fontSize:32] retain];
+    continueButton.position = ccp(screenSize.width / 2, screenSize.height / 2.9);
+    [continueButton setColor:ccc3(0, 0, 255)];
+    
     [self resetScene];
 		[self schedule: @selector(tick:)];
 	}
@@ -362,9 +390,30 @@
   }
 }
 
+- (void) offerHealth {
+  [self setState:BUY_HEALTH];
+  [self addChild:healthButton];
+  [self addChild:continueButton];
+}
+
+- (void) buyHealth {
+  if (cash > 50 && player1.health < 100) {
+    cash -= 50;
+    [player1 buyHealth];
+    [self updateHealth];
+    [self updateCash];
+  }
+}
+
+- (void) continueGame {
+  [self removeChild:healthButton cleanup:false];
+  [self removeChild:continueButton cleanup:false];
+  [self newRound]; 
+}
+
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event 
 {
-	for( UITouch *touch in touches ) {    
+	for(UITouch *touch in touches) {    
     
     switch (state) {
       case NEW_GAME:
@@ -384,8 +433,29 @@
         break;
         
       case ROUND_OVER:
-        [self newRound];
+        [self removeChild:endLabel cleanup:false];
+        if (round == ROUNDS_PER_LEAGUE) {
+          [self offerHealth];
+        }
+        else {
+         [self newRound]; 
+        }
         break;
+        
+      case BUY_HEALTH: {
+        CGPoint rawLocation = [touch locationInView: [touch view]];
+        CGPoint touchLocation = [[CCDirector sharedDirector] convertToGL:rawLocation];
+        
+        if (CGRectContainsPoint(CGRectMake(healthButton.position.x - (healthButton.contentSize.width / 2), healthButton.position.y - (healthButton.contentSize.height / 2), healthButton.contentSize.width, healthButton.contentSize.height), touchLocation)) {
+          [self buyHealth];
+        }
+        
+        if (CGRectContainsPoint(CGRectMake(continueButton.position.x - (continueButton.contentSize.width / 2), continueButton.position.y - (continueButton.contentSize.height), continueButton.contentSize.width, continueButton.contentSize.height), touchLocation)) {
+          [self continueGame];
+        }
+        
+        break;
+      }
         
       case GAME_OVER:
         [self newGame];

@@ -28,6 +28,10 @@
   leagueLabel.position = ccp(100, screenSize.height - 10);   
   [self addChild:leagueLabel];
   
+  cashLabel = [CCLabelTTF labelWithString:@"Cash:$0" fontName:@"Marker Felt" fontSize:18];
+  cashLabel.position = ccp(170, screenSize.height - 10);   
+  [self addChild:cashLabel];
+  
   healthNode = [[HealthNode alloc] init];
   [self addChild:healthNode];  
   
@@ -44,5 +48,9 @@
 
 - (void) setLeague:(int)l {
   [leagueLabel setString:[[NSString alloc]initWithFormat:@"League:%d", l]];
+}
+
+- (void) setCash:(int)c {
+  [cashLabel setString:[[NSString alloc]initWithFormat:@"Cash:$%d", c]];
 }
 @end

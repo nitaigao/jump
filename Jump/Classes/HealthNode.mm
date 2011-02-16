@@ -20,7 +20,7 @@
 
 - (void) draw {
   int lineHeight = 8;
-  int lineX = 210;
+  int lineX = 220;
   int lineY = 470;
   
   static int maxColor = 200;
